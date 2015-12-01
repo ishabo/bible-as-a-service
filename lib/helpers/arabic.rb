@@ -28,5 +28,10 @@ module Helper
     def self.tashkeel
       [FATHA, DAMMA, KASRA, TANWEEN_AL_FATH, TANWEEN_AL_DAM, TANWEEN_AL_KASR, SHADDA, SUKOON].join
     end
+
+    def self.encode string
+      ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
+      ic.iconv(string)
+    end
   end
 end

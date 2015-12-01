@@ -44,12 +44,22 @@ module Bible
 
     def self.get_book_id book_title
       book = Bible::Book.only(:_id).where(:title => book_title.downcase).first
-      return book._id if book
-      nil
+      return unless book
+      book._id
     end
 
     def self.get_ids_by_testament testament
       Bible::Book.get_list({testament: testament}).map {|field| field[:_id]}
+    end
+
+    class InvalidBookError < StandardError
+      def initialize (book)
+        @book = book
+      end
+
+      def message
+        "The Bible does not contain this book: #{@book}"
+      end
     end
 
   end

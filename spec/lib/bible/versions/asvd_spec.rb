@@ -1,6 +1,10 @@
 require "spec_helper"
 
-RSpec.describe Bible::Verse do
+RSpec.describe Bible::Versions::Asvd do
+
+  before :all do
+    @asvd = Bible::Versions::Asvd
+  end
 
   describe "#get_by_reference" do
     context "when book is valid" do
@@ -11,12 +15,23 @@ RSpec.describe Bible::Verse do
       end
 
       it "should render exactly 31 verses for genesis chapter 1" do
-        expect(Bible::Versions::Asvd.get_by_reference(@book_title, 1).count()).to eq 31
+        expect(@asvd.get_by_reference(@book_title, 1).count()).to eq 31
+      end
+
+      it "should render exactly 31 verses for genesis chapter 1" do
+        expect(@asvd.get_by_reference(@book_title, 1).count()).to eq 31
       end
     end
 
     context "when book is invalid" do
+      before :each do
+        @book_title = 'asheer'
+        allow(Bible::Book).to receive(:get_book_id).with(@book_title).and_return(nil)
+      end
 
+      it "raises an exception" do
+          expect{@asvd.get_by_reference(@book_title, 1)}.to raise_error Bible::Book::InvalidBookError
+      end
     end
 
   end
@@ -33,7 +48,7 @@ RSpec.describe Bible::Verse do
       context "when no verse number is provided" do
         it "should return all verses from the reference" do
           stub_search_type :reference, ["Genesis 2", "Genesis", 2, nil]
-          genesis1 = Bible::Versions::Asvd.search("Genesis 2")
+          genesis1 = @asvd.search("Genesis 2")
           expect(genesis1.count()).to eq 25
           expect(genesis1[20][:verse_number]).to eq 21
           expect(genesis1[24][:verse_number]).to eq 25
@@ -43,7 +58,7 @@ RSpec.describe Bible::Verse do
       context "when only one verse number is provided" do
         it "should return all verses from the reference" do
           stub_search_type :reference, ["Genesis 3: 5", "Genesis", 3, 5]
-          genesis1 = Bible::Versions::Asvd.search("Genesis 3: 5")
+          genesis1 = @asvd.search("Genesis 3: 5")
           expect(genesis1.count()).to eq 1
           expect(genesis1[0][:verse_number]).to eq 5
         end
@@ -52,7 +67,7 @@ RSpec.describe Bible::Verse do
       context "when a range of verses are provided" do
         it "should return all verses from the reference" do
           stub_search_type :reference, ["Genesis 50: 2-10", "Genesis", "50", "2-10"]
-          genesis1 = Bible::Versions::Asvd.search("Genesis 50: 2-10")
+          genesis1 = @asvd.search("Genesis 50: 2-10")
           expect(genesis1.count()).to eq 9
           expect(genesis1[0][:verse_number]).to eq 2
           expect(genesis1[8][:verse_number]).to eq 7
@@ -60,11 +75,11 @@ RSpec.describe Bible::Verse do
       end
 
       it "should return a full chapter with highlight on verse if successful" do
-        #Bible::Versions::Asvd.search("Genesis 1: 5")
+        #@asvd.search("Genesis 1: 5")
       end
 
       it "should return a standard error" do
-        #Bible::Versions::Asvd.search("Asher 1")
+        #@asvd.search("Asher 1")
       end
     end
 
@@ -74,7 +89,7 @@ RSpec.describe Bible::Verse do
       context "when using #{exact_or_any} match" do
         it "should return all or zero matches within #{search_context} for #{keyword}" do
           stub_search_type :keyword, ["#{search_context}:#{keyword}", search_context, keyword]
-          genesis1 = Bible::Versions::Asvd.search("#{search_context}:#{keyword}").count()
+          genesis1 = @asvd.search("#{search_context}:#{keyword}").count()
           expect(genesis1).to eq expected_matches
         end
       end

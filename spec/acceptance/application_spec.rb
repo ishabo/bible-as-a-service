@@ -1,10 +1,10 @@
 require "spec_helper"
-require "./app/bible_api"
+require "./application.rb"
 
-RSpec.describe BibleApi::Application do
+RSpec.describe Bible::Application do
 
   def app
-    BibleApi::Application
+    Bible::Application
   end
 
   def parse_body debug = false

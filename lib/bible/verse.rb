@@ -22,7 +22,7 @@ module Bible
 
       def self.get_by_reference(book_title, chapter = nil, numbers = nil)
         book_id = Bible::Book.get_book_id book_title.strip
-        return [] unless book_id
+        raise Bible::Book::InvalidBookError.new(book_title) unless book_id
         verses = where(bible_book_id: book_id)
         if chapter
           verses = verses.where(chapter: chapter)
@@ -37,7 +37,8 @@ module Bible
       end
 
       def self.search_keyword (matches)
-        keyword = self.validate_keyword(matches)
+        keyword = matches[2]
+        raise "No keyword provided" if keyword.empty?
         verses = find_keyword(self.prepare_keyword keyword)
         verses = verses.and(bible_book_id: {"$in": Bible::Book.get_ids_by_testament(matches[1])}) unless matches[1].nil? || Helper::Testament.narrow_down_testament(matches[1]) == Helper::Testament::ALL
         verses
@@ -45,12 +46,6 @@ module Bible
 
       def self.search_reference (matches)
         self.get_by_reference(matches[1].strip, matches[2], matches[3])
-      end
-
-      def self.validate_keyword (matches)
-        keyword = matches[2]
-        raise "No keyword provided" if keyword.empty?
-        keyword
       end
 
       def self.numbers_to_range numbers

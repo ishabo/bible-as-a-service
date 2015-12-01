@@ -28,7 +28,6 @@ RSpec.describe Bible::Book do
     it "test get_list with canon option"
     it "returns new testament ids" do
        expect(Bible::Book.get_list({testament: 'new_testament'}).map {|field| field[:_id]}).to eq [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76]
-
     end
 
     it "returns old testament ids" do

@@ -20,6 +20,9 @@ gem "rspec"
 gem 'rspec-given'
 
 gem 'guard'
+#gem 'guard-rspec'
 gem "activesupport", :require => "active_support"
 
 gem 'interface'
+
+gem 'iconv'

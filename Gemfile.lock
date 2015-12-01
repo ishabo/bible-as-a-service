@@ -30,6 +30,7 @@ GEM
       shellany (~> 0.0)
       thor (>= 0.18.1)
     i18n (0.7.0)
+    iconv (1.0.4)
     interface (1.0.3)
     jsmin (1.0.1)
     json (1.8.3)
@@ -117,6 +118,7 @@ DEPENDENCIES
   activesupport
   bson_ext
   guard
+  iconv
   interface
   json
   mongoid
