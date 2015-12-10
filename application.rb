@@ -7,7 +7,7 @@ module Bible
     set :root, File.dirname(__FILE__)
 
     get '/' do
-      
+
     end
 
   end
