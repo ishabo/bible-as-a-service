@@ -1,13 +1,14 @@
+production:
+  clients:
+    default:
+      uri: <%= ENV['MONGOLAB_URI'] %> #heroku config | grep MONGOLAB_URI
+
 development:
   clients:
     default:
-      database: bible
-      hosts:
-        - localhost:27017
+      uri: <%= ENV['MONGOLAB_DEV_URI'] %> #export MONGOLAB_DEV_URI=mongodb://localhost:27017/bible
 
 test:
   clients:
     default:
-      database: bible
-      hosts:
-        - localhost:27017
+      uri: <%= ENV['MONGOLAB_TEST_URI'] %> #export MONGOLAB_TEST_URI=mongodb://localhost:27017/bible
