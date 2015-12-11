@@ -16,23 +16,23 @@ RSpec.describe Helper::SearchPattern do
       shared_examples_for "reference" do |book, chapter, number = ""|
         context "When analysing references #{number.empty? ? 'without' : 'with'} number" do
           before do
-            @keyword_type, @matches = Helper::SearchPattern.new('English').scan("#{book} #{chapter}#{':' unless number.empty?}#{number}")
+            @pattern = Helper::SearchPattern.new('English').scan("#{book} #{chapter}#{':' unless number.empty?}#{number}")
           end
 
           it "knows it's a reference search" do
-            expect(@keyword_type).to eq :reference
+            expect(@pattern.keyword_type).to eq :reference
           end
 
           it "matches book title" do
-            expect(@matches[1]).to eq book.strip
+            expect(@pattern.book).to eq book.strip
           end
 
           it "matches book chapter" do
-            expect(@matches[2]).to eq chapter.strip
+            expect(@pattern.chapter).to eq chapter.strip
           end
 
           it "matches #{number.empty? ? 'matches' : 'does not match'} number" do
-            expect(@matches[3]).to eq number.strip
+            expect(@pattern.number).to eq number.strip
           end
         end
       end
@@ -50,19 +50,19 @@ RSpec.describe Helper::SearchPattern do
       shared_examples_for "keyword" do |language, testament_context, detect_testament, keyword, detect_keyword |
         context "When analysing keywords #{testament_context.empty? ? 'without' : 'with'} testament" do
           before do
-            @keyword_type, @matches = Helper::SearchPattern.new(language).scan("#{testament_context}#{':' unless testament_context.empty?}#{keyword}")
+            @pattern = Helper::SearchPattern.new(language).scan("#{testament_context}#{':' unless testament_context.empty?}#{keyword}")
           end
 
           it "knows it's a keyword search" do
-            expect(@keyword_type).to eq :keyword
+            expect(@pattern.keyword_type).to eq :keyword
           end
 
           it "matches testament" do
-            expect(@matches[1]).to eq (detect_testament ? testament_context : "")
+            expect(@pattern.search_context).to eq (detect_testament ? testament_context : "")
           end
 
           it "matches keyword" do
-            expect(@matches[2]).to eq (detect_keyword ? keyword.strip : "")
+            expect(@pattern.search_keyword).to eq (detect_keyword ? keyword.strip : "")
           end
         end
       end

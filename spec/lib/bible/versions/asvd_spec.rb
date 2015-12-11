@@ -37,9 +37,11 @@ RSpec.describe Bible::Versions::Asvd do
   end
 
   def stub_search_type search_type, matches
-    #search_pattern = SearchPattern.new('Arabic')
-    allow_any_instance_of(Helper::SearchPattern).to receive(:scan).with(matches[0]).and_return([search_type, matches])
-    allow(Bible::Book).to receive(:get_book_id).with(matches[1]).and_return(1) if search_type == :reference
+    result = {
+      keyword_type: search_type.to_s
+    }.merge(matches)
+    allow_any_instance_of(Helper::SearchPattern).to receive(:scan).with(matches[:full_match]).and_return(OpenStruct.new(result))
+    allow(Bible::Book).to receive(:get_book_id).with(matches[:book]).and_return(1) if search_type == :reference
   end
 
   describe "#search" do
@@ -47,7 +49,7 @@ RSpec.describe Bible::Versions::Asvd do
     context "when using a full reference" do
       context "when no verse number is provided" do
         it "should return all verses from the reference" do
-          stub_search_type :reference, ["Genesis 2", "Genesis", 2, nil]
+          stub_search_type :reference, full_match: "Genesis 2", book: "Genesis", chapter: 2, number: nil
           genesis1 = @asvd.search("Genesis 2")
           expect(genesis1.count()).to eq 25
           expect(genesis1[20][:verse_number]).to eq 21
@@ -57,7 +59,7 @@ RSpec.describe Bible::Versions::Asvd do
 
       context "when only one verse number is provided" do
         it "should return all verses from the reference" do
-          stub_search_type :reference, ["Genesis 3: 5", "Genesis", 3, 5]
+          stub_search_type :reference, full_match: "Genesis 3: 5", book: "Genesis", chapter: 3, number: 5
           genesis1 = @asvd.search("Genesis 3: 5")
           expect(genesis1.count()).to eq 1
           expect(genesis1[0][:verse_number]).to eq 5
@@ -66,7 +68,7 @@ RSpec.describe Bible::Versions::Asvd do
 
       context "when a range of verses are provided" do
         it "should return all verses from the reference" do
-          stub_search_type :reference, ["Genesis 50: 2-10", "Genesis", "50", "2-10"]
+          stub_search_type :reference, full_match: "Genesis 50: 2-10", book: "Genesis", chapter: "50", number: "2-10"
           genesis1 = @asvd.search("Genesis 50: 2-10")
           expect(genesis1.count()).to eq 9
           expect(genesis1[0][:verse_number]).to eq 2
@@ -88,7 +90,7 @@ RSpec.describe Bible::Versions::Asvd do
       #puts "-------------------------#{keyword.inspect}"
       context "when using #{exact_or_any} match" do
         it "should return all or zero matches within #{search_context} for #{keyword}" do
-          stub_search_type :keyword, ["#{search_context}:#{keyword}", search_context, keyword]
+          stub_search_type :keyword, full_match: "#{search_context}:#{keyword}", search_context: search_context, search_keyword: keyword
           genesis1 = @asvd.search("#{search_context}:#{keyword}").count()
           expect(genesis1).to eq expected_matches
         end
