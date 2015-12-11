@@ -40,7 +40,7 @@ module Bible
         keyword = matches[2]
         raise "No keyword provided" if keyword.empty?
         verses = find_keyword(self.prepare_keyword keyword)
-        verses = verses.and(bible_book_id: {"$in": Bible::Book.get_ids_by_testament(matches[1])}) unless matches[1].nil? || Helper::Testament.narrow_down_testament(matches[1]) == Helper::Testament::ALL
+        verses = verses.and(bible_book_id: {"$in" => Bible::Book.get_ids_by_testament(matches[1])}) unless matches[1].nil? || Helper::Testament.narrow_down_testament(matches[1]) == Helper::Testament::ALL
         verses
       end
 
