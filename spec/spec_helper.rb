@@ -4,9 +4,9 @@ Bundler.require(:default, :test)
 
 Mongoid.load!("./config/mongoid.yml", :test)
 Dir["./app/routes/*.rb"].each {|file| require file }
-Dir["./lib/helpers/*.rb"].each {|file| require file }
-Dir["./lib/bible/*.rb"].each {|file| require file }
-Dir["./lib/bible/versions/*.rb"].each {|file| require file }
+Dir["./app/helpers/*.rb"].each {|file| require file }
+Dir["./app/bible/*.rb"].each {|file| require file }
+Dir["./app/bible/versions/*.rb"].each {|file| require file }
 
 MARANATHA = "ماران أثا"
 METHUSELAH = "متوشالح"
