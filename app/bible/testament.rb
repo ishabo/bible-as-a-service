@@ -1,5 +1,7 @@
-module Helper
-
+module Bible
+  # Testament class provides a way to filter terms
+  # used to refer to old & new testament and standarise
+  # references to each
   class Testament
 
     ALL = 'all'

@@ -1,7 +1,7 @@
 module Bible
   class Version
 
-    attr_accessor :versions_dir
+    attr_reader :versions_dir
 
     def initialize
       @versions_dir = './versions'

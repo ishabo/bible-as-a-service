@@ -2,28 +2,31 @@ module Bible
 
   class Application < Sinatra::Base
 
+    include ExhibitHelper
+
     before do
       content_type :json, 'charset' => 'utf-8'
     end
 
     get "/api/:api_version/book_list/:testament/:canon_type" do
-      Service.new(Bible::Book.get_list(params)).display
+      exhibit Bible::Book.get_list(params)
     end
 
     get "/api/:api_version/full_book/:book" do
-      Service.new(version.get_by_reference(params[:book])).display
+      exhibit version.get_by_reference(params[:book])
     end
 
     get "/api/:api_version/book_chapter/:book/:chapter" do
-      Service.new(version.get_by_reference(params[:book], params[:chapter])).display
+      exhibit version.get_by_reference(params[:book], params[:chapter])
     end
 
     get "/api/:api_version/ref/:book/:chapter/:numbers" do
-      Service.new(version.get_by_reference(params[:book], params[:chapter], params[:numbers])).display
+      exhibit version.get_by_reference(params[:book], params[:chapter], params[:numbers])
     end
 
     get "/api/:api_version/search/:context/:keyword" do
-      Service.new(version.search("#{params[:context]}:#{URI.unescape(Helper::Arabic.encode params[:keyword])}")).display
+      content_type :json, 'charset' => 'utf-8'
+      exhibit version.search("#{params[:context]}:#{URI.unescape params[:keyword]}")
     end
 
     def version

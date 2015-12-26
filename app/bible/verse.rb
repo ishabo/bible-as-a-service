@@ -1,6 +1,9 @@
 module Bible
+  # Verse module is a shared set of methods to be included by very
+  # new versions class providing an interface functionality,
+  # inheritable methods and a flexible way to connect to almost
+  # identical collections
   module Verse
-
     extend ActiveSupport::Concern
 
     included do
@@ -18,29 +21,33 @@ module Bible
       end
 
       scope :order_by_id,    -> { asc(:verse_number) }
-      scope :find_numbers,   -> (numbers) { where(verse_number: self.numbers_to_range(numbers) ) unless numbers.nil? }
+      scope :find_chapter,   -> (chapter) { where(chapter: chapter) if chapter }
+      scope :find_numbers,   -> (numbers) { where(verse_number: self.numbers_to_range(numbers) ) if numbers }
 
       def self.get_by_reference(book_title, chapter = nil, numbers = nil)
         book_id = Bible::Book.get_book_id book_title
         raise Bible::Book::InvalidBookError.new(book_title) unless book_id
-        verses = where(bible_book_id: book_id)
-        if chapter
-          verses = verses.where(chapter: chapter)
-          verses = verses.find_numbers(numbers) if numbers
-        end
-        verses
+        where(bible_book_id: book_id).find_chapter(chapter).find_numbers(numbers)
       end
 
-      def self.search(keyword, search_pattern = Helper::SearchPattern)
+      def self.search(keyword, search_pattern = Bible::SearchPattern)
         match_result = search_pattern.new(pattern_language).scan(keyword)
         self.send("search_#{match_result.keyword_type}", match_result)
       end
 
+      singleton_class.send(:alias_method, :main_search, :search)
+
       def self.search_keyword (match_result)
-        raise "No keyword provided" if match_result.search_keyword.empty?
-        search_context = match_result.search_context
-        verses = find_keyword(self.prepare_keyword match_result.search_keyword)
-        verses = verses.and(bible_book_id: {"$in" => Bible::Book.get_ids_by_testament(search_context)}) unless search_context.nil? || Helper::Testament.narrow_down_testament(search_context) == Helper::Testament::ALL
+        search_keyword = match_result.search_keyword
+        raise "No keyword provided" if search_keyword.empty?
+        verses = find_keyword(self.prepare_keyword search_keyword)
+        self.search_in_context verses, match_result.search_context
+      end
+
+      def self.search_in_context (verses, search_context)
+        unless search_context.empty? || Bible::Testament.narrow_down_testament(search_context) == Bible::Testament::ALL
+          verses = verses.and(bible_book_id: {"$in" => Bible::Book.get_ids_by_testament(search_context)})
+        end
         verses
       end
 

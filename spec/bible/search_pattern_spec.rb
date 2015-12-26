@@ -1,13 +1,13 @@
 require "spec_helper"
 
-RSpec.describe Helper::SearchPattern do
+RSpec.describe Bible::SearchPattern do
   describe "#new" do
     it "initializes with English by default" do
-      expect(Helper::SearchPattern.new().language).to eq "\\w"
+      expect(Bible::SearchPattern.new().language).to eq "\\w"
     end
 
     it "initializes with Arabic" do
-      expect(Helper::SearchPattern.new('Arabic').language).to eq "\\p{Arabic}"
+      expect(Bible::SearchPattern.new('Arabic').language).to eq "\\p{Arabic}"
     end
   end
 
@@ -16,7 +16,7 @@ RSpec.describe Helper::SearchPattern do
       shared_examples_for "reference" do |book, chapter, number = ""|
         context "When analysing references #{number.empty? ? 'without' : 'with'} number" do
           before do
-            @pattern = Helper::SearchPattern.new('English').scan("#{book} #{chapter}#{':' unless number.empty?}#{number}")
+            @pattern = Bible::SearchPattern.new('English').scan("#{book} #{chapter}#{':' unless number.empty?}#{number}")
           end
 
           it "knows it's a reference search" do
@@ -50,7 +50,7 @@ RSpec.describe Helper::SearchPattern do
       shared_examples_for "keyword" do |language, testament_context, detect_testament, keyword, detect_keyword |
         context "When analysing keywords #{testament_context.empty? ? 'without' : 'with'} testament" do
           before do
-            @pattern = Helper::SearchPattern.new(language).scan("#{testament_context}#{':' unless testament_context.empty?}#{keyword}")
+            @pattern = Bible::SearchPattern.new(language).scan("#{testament_context}#{':' unless testament_context.empty?}#{keyword}")
           end
 
           it "knows it's a keyword search" do

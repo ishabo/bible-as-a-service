@@ -14,7 +14,7 @@ RSpec.describe Bible::Version do
     before :all do
       @bible_versions = Bible::Version.new
     end
-    
+
     it "loads an existing version" do
       expect(@bible_versions.load('asv').inspect).to eq "Bible::Versions::Asv"
     end

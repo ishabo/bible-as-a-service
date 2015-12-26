@@ -1,8 +1,9 @@
 require 'ostruct'
-module Helper
+module Bible
+  # SearchPattern analyses a set of regular expression pattern
+  # when a search query is made and encapsulate results
   class SearchPattern
     attr_reader :language
-    attr_accessor :patterns
 
     def initialize(language = 'English')
       @language = language == 'English' ? '\\w' : "\\p{#{language}}"
@@ -12,14 +13,22 @@ module Helper
                    }
     end
 
+    # scan takes on a string parameter and returns the first pattern detected
+    # @param keyword string
+    # @return OpenStruct object
     def scan(keyword)
       @patterns.each do |keyword_type, regex|
         matches = keyword.match regex[:expression]
-        return encapsulate keyword_type, regex[:match_keys], matches unless matches.nil?
+        return SearchPattern.encapsulate keyword_type, regex[:match_keys], matches if matches
       end
     end
 
-    def encapsulate keyword_type, match_keys, matches
+    # encapsulate match data from the scan method
+    # @param keyword_type symbol
+    # @param match_keys array
+    # @param matches array
+    # @return OpenStruct object
+    def self.encapsulate keyword_type, match_keys, matches
       matches = match_keys.zip(matches.to_a.map {|match| match.to_s.strip })
       return OpenStruct.new({keyword_type: keyword_type}.merge(Hash[matches]))
     end

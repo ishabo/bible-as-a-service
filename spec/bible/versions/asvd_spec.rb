@@ -40,7 +40,7 @@ RSpec.describe Bible::Versions::Asvd do
     result = {
       keyword_type: search_type.to_s
     }.merge(matches)
-    allow_any_instance_of(Helper::SearchPattern).to receive(:scan).with(matches[:full_match]).and_return(OpenStruct.new(result))
+    allow_any_instance_of(Bible::SearchPattern).to receive(:scan).with(matches[:full_match]).and_return(OpenStruct.new(result))
     allow(Bible::Book).to receive(:get_book_id).with(matches[:book]).and_return(1) if search_type == :reference
   end
 
