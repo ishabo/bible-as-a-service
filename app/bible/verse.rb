@@ -13,7 +13,7 @@ module Bible
       field :chapter, type: Integer
       field :verse_number, type: Integer
       field :verse_text, type: String
-
+      embedded_in :photographic, polymorphic: true
       scope :find_keyword, -> (keyword) do
         keyword = [keyword] unless keyword.kind_of?(Array)
         keyword.map! { |keyword| {verse_text: /.*#{keyword}.*/ } }
@@ -26,7 +26,7 @@ module Bible
 
       def self.get_by_reference(book_title, chapter = nil, numbers = nil)
         book_id = Bible::Book.get_book_id book_title
-        raise Bible::Book::InvalidBookError.new(book_title) unless book_id
+        raise InvalidBookError.new(book_title) unless book_id
         where(bible_book_id: book_id).find_chapter(chapter).find_numbers(numbers)
       end
 

@@ -8,8 +8,8 @@ module Bible
       content_type :json, 'charset' => 'utf-8'
     end
 
-    get "/api/:api_version/book_list/:testament/:canon_type" do
-      exhibit Bible::Book.get_list(params)
+    get "/api/:api_version/book_list/?:testament?/?:canon_type?" do
+      exhibit Bible::Book.get_list(params), :json
     end
 
     get "/api/:api_version/full_book/:book" do

@@ -5,10 +5,13 @@ module Bible
   class Book
 
     include Mongoid::Document
+    include Hatchet
 
     ADDITIONAL = 'additional'
     CANONICAL = 'canonical'
     ALL = 'all'
+
+    store_in collection: "bible_books"
 
     field :title, type: String
     field :testament, type: String
@@ -30,11 +33,12 @@ module Bible
     scope :select_fields,           -> (fields) { only(fields) if fields }
 
     def self.get_list options = {}
-      method = "#{Bible::Testament.detect_testament options[:testament]}_"
-      method = "#{method}#{(options[:canon_type] ||= ALL)}"
-      list = Bible::Book.send(method)
-      list = self.merge_apocrypha list.order_by_id.to_a
-      list
+      begin
+        list = send(prep_scope_method options)
+        self.merge_apocrypha list.to_a
+      rescue => e
+        raise InvalidParamsError.new options
+      end
     end
 
     def self.merge_apocrypha list
@@ -47,13 +51,13 @@ module Bible
     end
 
     def self.get_book_id book_title
-      book = Bible::Book.only(:_id).where(:title => book_title.downcase.strip).first
+      book = only(:_id).find_by(:title => book_title.downcase.strip)
       return unless book
       book._id
     end
 
     def self.get_ids_by_testament testament
-      Bible::Book.get_list({testament: testament}).map {|field| field[:_id]}
+      get_list({testament: testament}).map {|field| field[:_id]}
     end
 
     private
@@ -68,20 +72,10 @@ module Bible
       list
     end
 
-    # This is a child of ruby StandardError
-    # For customizing errors for absent books
-    # When an attempt is made to fetch details
-    # due to a typo, wrong identifier or missing
-    # data from the database
-    class InvalidBookError < StandardError
-      def initialize (book)
-        @book = book
-      end
-
-      def message
-        "The Bible does not contain this book: #{@book}"
-      end
+    def self.prep_scope_method options
+      method = "#{Bible::Testament.detect_testament options[:testament]}_"
+      method = "#{method}#{(options[:canon_type] ||= ALL)}"
+      method
     end
-
   end
 end

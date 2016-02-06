@@ -6,7 +6,9 @@ RSpec.describe ExhibitHelper do
 
   describe "exhibit different formats" do
     it "converts hash to JSON by default" do
-      expect(exhibit {:a => "a"}).to eq ()
+      hash = {a: "a"}
+      result = "{\"version\":1.0,\"data\":{\"a\":\"a\"}}"
+      expect(exhibit hash).to eq result
     end
   end
 end

@@ -8,7 +8,7 @@ gem 'sinatra-reloader'
 gem 'sinatra-assetpack'
 
 # MongoDB
-gem 'mongoid'
+gem 'mongoid', '~> 5.0'
 gem 'bson_ext'
 gem "json"
 
@@ -20,9 +20,11 @@ gem "rspec"
 gem 'rspec-given'
 
 gem 'guard'
-#gem 'guard-rspec'
-gem "activesupport", :require => "active_support"
+
+gem 'shotgun'
 
 gem 'interface'
 
 gem 'iconv'
+
+gem 'hatchet'

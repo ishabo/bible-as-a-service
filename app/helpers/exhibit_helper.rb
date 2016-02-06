@@ -1,9 +1,9 @@
 module ExhibitHelper
-  def exhibit (result, format = 'json')
+  def exhibit (result, format = :json)
     service = Service.new(result)
     begin
-      service.send("to_#{format}")
-    rescue e
+      service.send("to_#{format.to_s}")
+    rescue => e
       raise "Perhaps you've provided the wrong format? - #{e.message}"
     end
   end
@@ -19,6 +19,7 @@ class Service
     rescue Exception => e
        @json[:message] = e.message
     end
+
   end
 
   def to_json

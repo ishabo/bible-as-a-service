@@ -30,7 +30,7 @@ RSpec.describe Bible::Versions::Asvd do
       end
 
       it "raises an exception" do
-          expect{@asvd.get_by_reference(@book_title, 1)}.to raise_error Bible::Book::InvalidBookError
+          expect{@asvd.get_by_reference(@book_title, 1)}.to raise_error InvalidBookError
       end
     end
 
