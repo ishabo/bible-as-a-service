@@ -41,6 +41,16 @@ module Bible
       end
     end
 
+    def self.guess_book book, lang
+      book = Bible::Book.get_list.find do |b|
+        b[:title] == book ||
+        b[:abbr_name][lang] == book ||
+        b[:short_name][lang] == book ||
+        b[:full_name][lang] == book
+      end
+      book
+    end
+
     def self.merge_apocrypha list
       list.map! do |book|
         add_book = find_additionals list, book[:title]
