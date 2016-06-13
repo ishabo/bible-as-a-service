@@ -13,14 +13,16 @@ module Bible
       field :chapter, type: Integer
       field :verse_number, type: Integer
       field :verse_text, type: String
+
       embedded_in :photographic, polymorphic: true
+
       scope :find_keyword, -> (keyword) do
         keyword = [keyword] unless keyword.kind_of?(Array)
         keyword.map! { |keyword| {verse_text: /.*#{keyword}.*/ } }
         where(keyword.count() > 1 ? {'$or' => keyword} : keyword[0])
       end
 
-      scope :order_by_id,    -> { asc(:verse_number) }
+      default_scope -> { asc(:verse_number) }
       scope :find_chapter,   -> (chapter) { where(chapter: chapter) if chapter }
       scope :find_numbers,   -> (numbers) { where(verse_number: self.numbers_to_range(numbers) ) if numbers }
 
