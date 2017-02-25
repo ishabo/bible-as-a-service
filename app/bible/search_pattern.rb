@@ -8,9 +8,10 @@ module Bible
     def initialize(language = 'English')
       @language = language == 'English' ? '\\w' : "\\p{#{language}}"
       @patterns =  {
-                      reference:  { expression: /^([\w\s]+)\s+([\d]{1,3})\s*:?\s*([\d-]*)/i, match_keys: %w{full_match book chapter number} },
-                      keyword:    { expression: /(whole|all|new_testament|nt|old_testament|ot|new|old*)?:?([#{@language}\s|]*)/i, match_keys: %w{full_match search_context search_keyword} }
-                   }
+                      reference:              { expression: /^([\w\s]+)\s+([\d]{1,3})\s*:?\s*([\d-]*)/i, match_keys: %w{full_match book chapter number} },
+                      keyword_in_section:     { expression: /(whole|all|new_testament|nt|old_testament|ot|new|old*):?([#{@language}\s|]*)/i, match_keys: %w{full_match search_context search_keyword} },
+                      keyword_in_book:        { expression: /([\w,]+):?([#{@language}\s|]*)/i, match_keys: %w{full_match search_context search_keyword} }
+      }
     end
 
     # scan takes on a string parameter and returns the first pattern detected

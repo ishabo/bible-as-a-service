@@ -40,15 +40,32 @@ module Bible
       singleton_class.send(:alias_method, :main_search, :search)
 
       def self.search_keyword (match_result)
-        search_keyword = match_result.search_keyword
-        raise "No keyword provided" if search_keyword.empty?
-        verses = find_keyword(self.prepare_keyword search_keyword)
-        self.search_in_context verses, match_result.search_context
+        search_keyword = self.ensure_keyword match_result.search_keyword
+        find_keyword(self.prepare_keyword search_keyword)
       end
 
-      def self.search_in_context (verses, search_context)
+      def self.search_keyword_in_section (match_result)
+        verses = self.search_keyword match_result
+        self.search_in_section verses, match_result.search_context
+      end
+
+      def self.search_keyword_in_book (match_result)
+        verses = self.search_keyword match_result
+        self.search_in_book verses, match_result.search_context
+      end
+
+      def self.search_in_book (verses, search_context)
+        unless search_context.empty?
+          bible_book_ids = search_context.split(',').map { |book| Bible::Book.get_book_id(book) }
+          verses = verses.and(bible_book_id: {"$in" => bible_book_ids})
+        end
+        verses
+      end
+
+      def self.search_in_section (verses, search_context)
         unless search_context.empty? || Bible::Testament.narrow_down_testament(search_context) == Bible::Testament::ALL
-          verses = verses.and(bible_book_id: {"$in" => Bible::Book.get_ids_by_testament(search_context)})
+          bible_book_ids = Bible::Book.get_ids_by_testament(search_context)
+          verses = verses.and(bible_book_id: {"$in" => bible_book_ids})
         end
         verses
       end
@@ -60,6 +77,11 @@ module Bible
       def self.numbers_to_range numbers
         numbers = numbers.to_s.split('-').map(&:to_i).sort
         Range.new(numbers[0], numbers[-1])
+      end
+
+      def self.ensure_keyword keyword
+        raise InvalidParamsError.new("No keyword provided") if keyword.empty?
+        keyword
       end
 
       #Interface methods
