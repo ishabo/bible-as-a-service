@@ -29,7 +29,8 @@ module Bible
       method = "#{Bible::Testament.detect_testament options[:testament]}_"
       method = "#{method}#{Bible::Canon.detect_canon_type (options[:canon_type] ||= 'all')}"
       list = Bible::Book.send(method)
-      list = self.merge_apocrypha list.order_by_id.to_a
+      # list = self.merge_apocrypha list.order_by_id.to_a
+      list = list.order_by_id.to_a
       list
     end
 

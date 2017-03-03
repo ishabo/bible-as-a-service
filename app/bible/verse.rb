@@ -22,7 +22,7 @@ module Bible
         where(keyword.count() > 1 ? {'$or' => keyword} : keyword[0])
       end
 
-      default_scope -> { asc(:verse_number) }
+      default_scope -> { asc(:bible_book_id).asc(:chapter).asc(:verse_number) }
       scope :find_chapter,   -> (chapter) { where(chapter: chapter) if chapter }
       scope :find_numbers,   -> (numbers) { where(verse_number: self.numbers_to_range(numbers) ) if numbers }
 

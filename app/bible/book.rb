@@ -35,7 +35,7 @@ module Bible
     def self.get_list options = {}
       begin
         list = send(prep_scope_method options)
-        self.merge_apocrypha list.to_a
+        list.to_a #self.merge_apocrypha
       rescue => e
         raise InvalidParamsError.new options
       end
