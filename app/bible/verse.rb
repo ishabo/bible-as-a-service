@@ -34,10 +34,14 @@ module Bible
 
       def self.search(keyword, search_pattern = Bible::SearchPattern)
         match_result = search_pattern.new(pattern_language).scan(keyword)
+        # based on the keyword, this will return either of these:
+        # search_keyword(match_result)
+        # search_keyword_in_section(match_result)
+        # ...
         self.send("search_#{match_result.keyword_type}", match_result)
       end
 
-      singleton_class.send(:alias_method, :main_search, :search)
+      singleton_class.send(:alias_method, :super_search, :search)
 
       def self.search_keyword (match_result)
         search_keyword = self.ensure_keyword match_result.search_keyword

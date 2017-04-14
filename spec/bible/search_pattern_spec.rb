@@ -47,33 +47,34 @@ RSpec.describe Bible::SearchPattern do
     end
 
     context "analysing keyword patterns" do
-      shared_examples_for "keyword" do |language, testament_context, detect_testament, keyword, detect_keyword |
-        context "When analysing keywords #{testament_context.empty? ? 'without' : 'with'} testament" do
+      shared_examples_for "keyword" do |language, search_context, keyword, detected_keyword, search_context_method |
+        context "When analysing keywords #{search_context.empty? ? 'without' : 'with'} testament" do
           before do
-            @pattern = Bible::SearchPattern.new(language).scan("#{testament_context}#{':' unless testament_context.empty?}#{keyword}")
+            separator = search_context.empty? ? ':' : ''
+            @pattern = Bible::SearchPattern.new(language).scan("#{search_context}#{separator}#{keyword}")
           end
 
           it "knows it's a keyword search" do
-            expect(@pattern.keyword_type).to eq :keyword
+            expect(@pattern.keyword_type).to eq(search_context_method)
           end
 
           it "matches testament" do
-            expect(@pattern.search_context).to eq (detect_testament ? testament_context : "")
+            expect(@pattern.search_context).to eq(search_context.present? ? search_context : detected_keyword)
           end
 
           it "matches keyword" do
-            expect(@pattern.search_keyword).to eq (detect_keyword ? keyword.strip : "")
+            expect(@pattern.search_keyword).to eq(search_context.present? ? detected_keyword : '')
           end
         end
       end
 
-      it_behaves_like "keyword", "Arabic", "new_testament", true, MARANATHA, true
-      it_behaves_like "keyword", "Arabic", "nt", true, JESUS_OR_JOSHUA, true
-      it_behaves_like "keyword", "Arabic", "old", true, FALSE_PROPHET, true
-      it_behaves_like "keyword", "Arabic", "blabla", false, FALSE_PROPHET, false
-      it_behaves_like "keyword", "English", "old_testament", true, METHUSELAH, false
-      it_behaves_like "keyword", "Arabic", "whole", true, " asd as das ", false
-      it_behaves_like "keyword", "English", "", true, " asdsdas ", true
+      it_behaves_like 'keyword', 'Arabic', 'new_testament', MARANATHA, MARANATHA, :keyword_in_section
+      it_behaves_like 'keyword', 'Arabic', 'nt', JESUS_OR_JOSHUA, JESUS_OR_JOSHUA, :keyword_in_section
+      it_behaves_like 'keyword', 'Arabic', 'old', FALSE_PROPHET, FALSE_PROPHET, :keyword_in_section
+      it_behaves_like 'keyword', 'Arabic', 'sads', FALSE_PROPHET, FALSE_PROPHET, :keyword_in_book
+      it_behaves_like 'keyword', 'English', 'old_testament', METHUSELAH, '', :keyword_in_section
+      it_behaves_like 'keyword', 'Arabic', 'whole', ' asd as das ', '', :keyword_in_section
+      it_behaves_like 'keyword', 'English', '', ' asdsdas ', 'asdsdas',  :keyword_in_book
     end
   end
 end

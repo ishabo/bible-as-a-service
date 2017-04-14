@@ -2,11 +2,12 @@ module Bible
   module Versions
     class Asvd
       include Bible::Verse
+      extend ArabicHelper
 
-      store_in collection: "bible_asvd_verses"
+      store_in collection: 'bible_asvd_verses'
 
       def self.search(keyword)
-        main_search(ArabicHelper.encode keyword)
+        super_search(encode keyword)
       end
 
       def self.pattern_language
@@ -14,7 +15,17 @@ module Bible
       end
 
       def self.prepare_keyword keyword
-        keyword.split('|').map! { |keyword| keyword.scan(/./).join("[#{ArabicHelper.tashkeel}]{0,2}") }
+
+        alt = lambda do |c|
+          letters = letter_alter(c)
+          "[#{letters.join('')}]{1}"
+        end
+
+        keyword.split('|').map! do |k|
+          k.scan(/./)
+              .map(&alt)
+              .join("[#{tashkeel}]{0,2}")
+        end
       end
     end
   end
