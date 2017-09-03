@@ -34,7 +34,6 @@ RSpec.describe Bible::Application do
       context "and apocryphal are included" do
         it "returns 46 books" do
           get '/api/v1/ar/book_list/old_testament/all'
-          #abort parse_body.inspect
           expect(parse_body.count).to eq(49)
         end
       end
